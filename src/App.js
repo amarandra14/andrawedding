@@ -1,23 +1,41 @@
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import React, { useState } from "react";
+import { Route, Routes } from "react-router-dom";
 
-import { Header, Fitur, Harga, Accordion, Pembayaran } from './container';
+import { Header, Fitur, Harga, Accordion, Pembayaran } from "./container";
 
-import { Navbar } from './components';
-import './App.css';
-import LandingPage from './pages/LandingPage/LandingPage';
-import Login from './pages/Login/Login'
-import Register from './pages/Register/Register';
-
+import { Navbar } from "./components";
+import "./App.css";
+import LandingPage from "./pages/LandingPage";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import { ToastContainer } from "react-toastify";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./utils/firebase-config";
 
 const App = () => {
-  return (
-    <Routes>
-      <Route element={<LandingPage/>} path="/" />
-      <Route element={<Login/>} path="/login" />
-      <Route element={<Register/>} path="/register" />
-    </Routes>
-  )
-}
+  const [user, setUser] = useState({});
 
-export default App 
+  onAuthStateChanged(auth, (currentUser) => {
+    setUser(currentUser);
+  });
+
+  console.log(user)
+
+  return (
+    <>
+      <ToastContainer />
+      <Routes>
+        <Route element={<LandingPage user={user} />} path="/" />
+        <Route element={<Login />} path="/login" />
+        <Route element={<Register />} path="/register" />
+        <Route
+          element={user ? <Dashboard /> : <LandingPage />}
+          path="/dashboard"
+        />
+      </Routes>
+    </>
+  );
+};
+
+export default App;
